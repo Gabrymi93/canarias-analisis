@@ -66,8 +66,8 @@ def sanitize(name: str) -> str:
     name = re.sub(r"[^\w\-]", "_", name)
     name = re.sub(r"_+", "_", name)
     name = name.strip("_")
-    # Limit length to avoid overly long filenames
-    return name[:80]
+    # Limit length to avoid overly long filenames (120 chars keeps words whole for typical dataset names)
+    return name[:120]
 
 
 def download_resource(url: str, output_dir: Path, chunk_size: int = 8192) -> Path:
@@ -98,23 +98,24 @@ def download_resource(url: str, output_dir: Path, chunk_size: int = 8192) -> Pat
     return out_path
 
 
-def rename_for_clarity(raw_path: Path, package_name: str) -> Path:
+def rename_for_clarity(raw_path: Path, package_name: str, fmt: str = "CSV") -> Path:
     """
     Rename an opaquely-named downloaded file to something more descriptive.
 
     The CKAN download URL often contains an internal ID (e.g. e70048a_dsc_0003.csv
     or 1.4.csv). After download, this function tries to derive a more human-readable
-    name based on the package name and the original extension.
+    name based on the package name and the requested format extension.
 
     Args:
         raw_path: Path of the freshly downloaded file
         package_name: CKAN package name (used to generate a better name)
+        fmt: requested format (used for extension, e.g. CSV -> .csv)
 
     Returns:
         New Path (may be same as raw_path if rename not needed or not possible)
     """
-    ext = raw_path.suffix.lower()  # .csv, .json, .xlsx, etc.
-    # Build a readable name from the package_id
+    # Use the requested format for extension, not the opaque one from URL
+    ext = f".{fmt.lower()}"
     base = sanitize(package_name)
     if not base:
         base = "dataset"
@@ -125,7 +126,6 @@ def rename_for_clarity(raw_path: Path, package_name: str) -> Path:
         return raw_path
 
     if new_path.exists():
-        # Don't overwrite — append a counter
         counter = 1
         while new_path.exists():
             new_path = raw_path.parent / f"{base}_{counter}{ext}"
@@ -144,8 +144,8 @@ def main():
         "--format", default="CSV", help="Format: CSV (default), JSON, PC-Axis"
     )
     parser.add_argument(
-        "--rename", action="store_true", default=True,
-        help="Rename downloaded file to human-readable name (default: True)"
+        "--no-rename", action="store_true", default=False,
+        help="Disable auto-rename of downloaded files"
     )
     args = parser.parse_args()
 
@@ -158,8 +158,8 @@ def main():
     path = download_resource(url, out_dir)
     print(f"Downloaded: {path}")
 
-    if args.rename:
-        path = rename_for_clarity(path, args.dataset)
+    if not args.no_rename:
+        path = rename_for_clarity(path, args.dataset, args.format)
         print(f"Saved: {path}")
 
 
