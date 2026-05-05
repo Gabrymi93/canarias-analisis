@@ -4,12 +4,14 @@ Downloads datasets from the CKAN portal of Gobierno de Canarias (ISTAC).
 
 Usage:
     python -m src.fetch --dataset <package_id_or_name> --output data/raw/
+    python -m src.fetch --dataset <package_id_or_name> --output data/raw/ --format JSON
 """
 
 import argparse
 import json
 import urllib.request
 from pathlib import Path
+import re
 
 CKAN_BASE = "https://datos.canarias.es/catalogos/general/api/action"
 
@@ -17,6 +19,13 @@ CKAN_BASE = "https://datos.canarias.es/catalogos/general/api/action"
 def get_resource_url(package_id: str, fmt: str = "CSV") -> tuple[str, str]:
     """
     Find download URL for a specific format within a CKAN dataset.
+
+    Logic:
+      1. Look for exact format match (case-insensitive). If found and format
+         code looks right (CSV, JSON, XLSX, etc.), use it.
+      2. If no exact match, look for resources where the format string
+         CONTAINS the requested fmt. If found, warn but use it.
+      3. If nothing matches at all, raise ValueError.
 
     Args:
         package_id: CKAN dataset ID or name
@@ -30,16 +39,35 @@ def get_resource_url(package_id: str, fmt: str = "CSV") -> tuple[str, str]:
         pkg = json.loads(resp.read())
 
     resources = pkg["result"]["resources"]
+    fmt_upper = fmt.upper()
+
+    # Step 1: exact format match
     for r in resources:
-        if r["format"].upper() == fmt.upper():
+        if r["format"].upper() == fmt_upper:
             return r["url"], r["name"]
 
-    # fallback: first resource matching format
+    # Step 2: partial match (format string contains fmt)
     for r in resources:
-        if fmt.upper() in r["format"].upper():
+        if fmt_upper in r["format"].upper():
+            print(f"  [WARNING] Exact '{fmt}' not found. Using '{r['format']}' resource instead: {r['name']}")
             return r["url"], r["name"]
 
-    raise ValueError(f"No resource in format {fmt} for dataset {package_id}")
+    # Step 3: nothing found
+    available = [r["format"] for r in resources]
+    raise ValueError(
+        f"No resource in format '{fmt}' for dataset '{package_id}'. "
+        f"Available formats: {available}"
+    )
+
+
+def sanitize(name: str) -> str:
+    """Make a string safe for use as a filename."""
+    # Remove characters that are problematic in filenames
+    name = re.sub(r"[^\w\-]", "_", name)
+    name = re.sub(r"_+", "_", name)
+    name = name.strip("_")
+    # Limit length to avoid overly long filenames
+    return name[:80]
 
 
 def download_resource(url: str, output_dir: Path, chunk_size: int = 8192) -> Path:
@@ -70,6 +98,44 @@ def download_resource(url: str, output_dir: Path, chunk_size: int = 8192) -> Pat
     return out_path
 
 
+def rename_for_clarity(raw_path: Path, package_name: str) -> Path:
+    """
+    Rename an opaquely-named downloaded file to something more descriptive.
+
+    The CKAN download URL often contains an internal ID (e.g. e70048a_dsc_0003.csv
+    or 1.4.csv). After download, this function tries to derive a more human-readable
+    name based on the package name and the original extension.
+
+    Args:
+        raw_path: Path of the freshly downloaded file
+        package_name: CKAN package name (used to generate a better name)
+
+    Returns:
+        New Path (may be same as raw_path if rename not needed or not possible)
+    """
+    ext = raw_path.suffix.lower()  # .csv, .json, .xlsx, etc.
+    # Build a readable name from the package_id
+    base = sanitize(package_name)
+    if not base:
+        base = "dataset"
+    new_name = f"{base}{ext}"
+    new_path = raw_path.parent / new_name
+
+    if new_path == raw_path:
+        return raw_path
+
+    if new_path.exists():
+        # Don't overwrite — append a counter
+        counter = 1
+        while new_path.exists():
+            new_path = raw_path.parent / f"{base}_{counter}{ext}"
+            counter += 1
+
+    raw_path.rename(new_path)
+    print(f"  Renamed: {raw_path.name} -> {new_path.name}")
+    return new_path
+
+
 def main():
     parser = argparse.ArgumentParser(description="Download dataset from datos.canarias.es")
     parser.add_argument("--dataset", required=True, help="CKAN dataset ID or name")
@@ -77,17 +143,24 @@ def main():
     parser.add_argument(
         "--format", default="CSV", help="Format: CSV (default), JSON, PC-Axis"
     )
+    parser.add_argument(
+        "--rename", action="store_true", default=True,
+        help="Rename downloaded file to human-readable name (default: True)"
+    )
     args = parser.parse_args()
 
     out_dir = Path(args.output)
     print(f"Downloading {args.dataset} (format={args.format})...")
 
     url, name = get_resource_url(args.dataset, args.format)
-    print(f"Resource URL: {url}")
-    print(f"Name: {name}")
+    print(f"Resource: {name}")
 
     path = download_resource(url, out_dir)
-    print(f"Saved to: {path}")
+    print(f"Downloaded: {path}")
+
+    if args.rename:
+        path = rename_for_clarity(path, args.dataset)
+        print(f"Saved: {path}")
 
 
 if __name__ == "__main__":

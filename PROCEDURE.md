@@ -101,6 +101,39 @@ After adding a new topic, check whether the procedure itself needs an update (e.
 
 ---
 
+## Notes on `src/fetch.py`
+
+The fetch script automatically renames downloaded files to human-readable names
+(e.g. `1.4.csv` → `indice-de-precios-de-vivienda.csv`) unless you pass `--no-rename`.
+
+If a file already exists with that name, it appends a counter (`_1`, `_2`, ...).
+
+---
+
+## Conventions summary
+
+```bash
+git add notebooks/<nn>_<topic>.ipynb \
+         output/figures/<topic>*.png \
+         README.md
+
+git commit -m "<nn> — <topic>: short description
+
+- Dataset: <source> (<org>, <year_range>)
+- <n> figures: <list>
+- Note: data/raw/ is gitignored — download fresh before running"
+
+git push
+```
+
+---
+
+## 7. Update PROCEDURE.md
+
+After adding a new topic, check whether the procedure itself needs an update (e.g., new conventions added, edge cases documented). If something changed, update this file in the same commit.
+
+---
+
 ## Conventions summary
 
 | Item | Rule |
