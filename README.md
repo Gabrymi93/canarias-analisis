@@ -30,6 +30,7 @@ canarias-analisis/
 | 01 | Road accidents | Deaths by province and road type | 1999–2023 |
 | 02 | Housing prices | Index (base 2015=100) — Canary Islands vs Spain | 2007–2025 |
 | 03 | Unemployment | Beneficiaries, coverage rate, registered unemployed | 2000–2026 |
+| 04 | Vacational rentals | 73k registered properties across islands and municipalities | live registry |
 
 ## Setup
 
