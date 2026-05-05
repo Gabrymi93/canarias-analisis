@@ -9,19 +9,26 @@ Datasets from [datos.canarias.es](https://datos.canarias.es) — CKAN portal of 
 ```
 canarias-analisis/
 ├── README.md
+├── PROCEDURE.md
 ├── requirements.txt
 ├── .gitignore
 ├── notebooks/
-│   └── 01_incidentes_stradales.ipynb
+│   ├── 01_incidentes_stradales.ipynb
+│   └── 02_vivienda_prezzi.ipynb
 ├── src/
 │   └── fetch.py
+├── data/
+│   └── raw/                     # gitignored — download fresh each time
 └── output/
     └── figures/
 ```
 
 ## Topics available
 
-- **Road accidents** — mortality by province and road type, 1999–2023
+| # | Topic | Description | Period |
+|---|---|---|---|
+| 01 | Road accidents | Deaths by province and road type | 1999–2023 |
+| 02 | Housing prices | Index (base 2015=100) — Canary Islands vs Spain | 2007–2025 |
 
 ## Setup
 
@@ -29,10 +36,6 @@ canarias-analisis/
 pip install -r requirements.txt
 ```
 
-## Notebooks
+## Adding a new topic
 
-| # | Topic | Data |
-|---|---|---|
-| 01 | Road accidents | Deaths by province and road type, 1999–2023 |
-
-To add a topic: `src/fetch.py` downloads CSVs from CKAN, `notebooks/` contains the analysis.
+See [PROCEDURE.md](./PROCEDURE.md) for the standard workflow.
