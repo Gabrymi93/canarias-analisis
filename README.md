@@ -12,18 +12,16 @@ canarias-analisis/
 ├── PROCEDURE.md
 ├── requirements.txt
 ├── .gitignore
-├── notebooks/
-│   ├── 01_incidentes_stradales.ipynb
-│   └── 02_vivienda_prezzi.ipynb
+├── notebooks/              # 01_road_accidents ... 08_water_consumption
 ├── src/
-│   └── fetch.py
+│   └── fetch.py            # download + auto-rename from datos.canarias.es
 ├── data/
-│   └── raw/                     # gitignored — download fresh each time
+│   └── raw/                 # gitignored — download fresh each time
 └── output/
     └── figures/
 ```
 
-## Topics available
+## Topics
 
 | # | Topic | Description | Period |
 |---|---|---|---|
@@ -34,6 +32,7 @@ canarias-analisis/
 | 05 | Airport flights | Commercial operations by island — Gran Canaria vs Tenerife | 2004–2020 |
 | 06 | Tourism employment | Companies in tourism activities by island — CNAE-09 classification | 2005–2015 |
 | 07 | Tourist digital behavior | Smartphone/tablet usage by accommodation type — connected vs offline | 2018–2020 |
+| 08 | Water consumption | Volume, per capita, losses by water cycle (ISTAC) | 1996–2022 |
 
 ## Setup
 
@@ -43,4 +42,4 @@ pip install -r requirements.txt
 
 ## Adding a new topic
 
-See [PROCEDURE.md](./PROCEDURE.md) for the standard workflow.
+See [PROCEDURE.md](./PROCEDURE.md) — fixed workflow, 8 steps.
