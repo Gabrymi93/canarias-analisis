@@ -32,6 +32,8 @@ canarias-analisis/
 | 03 | Unemployment | Beneficiaries, coverage rate, registered unemployed | 2000–2026 |
 | 04 | Vacational rentals | 73k registered properties across islands and municipalities | live registry |
 | 05 | Airport flights | Commercial operations by island — Gran Canaria vs Tenerife | 2004–2020 |
+| 06 | Tourism employment | Companies in tourism activities by island — CNAE-09 classification | 2005–2015 |
+| 07 | Tourist digital behavior | Smartphone/tablet usage by accommodation type — connected vs offline | 2018–2020 |
 
 ## Setup
 
