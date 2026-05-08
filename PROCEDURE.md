@@ -61,3 +61,5 @@ Auto-renames downloaded files to human-readable names. Pass `--no-rename` to dis
 | Tourism employment | `empresas-segun-actividades-turisticas-cnae-09-islas-de-canarias-y-periodos1` |
 | Tourist digital behavior | `turistas-de-16-y-mas-anos-segun-si-han-usado-en-canarias-un-smartphone-o-tablet-con-conexion-a-internet-2-2` |
 | Water consumption | `volumen-y-volumen-por-habitante-y-dia-de-agua-segun-ciclos-del-agua-canarias-por-anos` |
+| GDP | `principales-resultados-del-pib-comunidades-autonomas-por-anos-desde-20001` |
+| Foreign trade | (to find) |
