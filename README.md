@@ -12,7 +12,7 @@ canarias-analisis/
 ├── PROCEDURE.md
 ├── requirements.txt
 ├── .gitignore
-├── notebooks/              # 01_road_accidents ... 08_water_consumption
+├── notebooks/              # 01_road_accidents ... 09_gdp
 ├── src/
 │   └── fetch.py            # download + auto-rename from datos.canarias.es
 ├── data/
@@ -33,6 +33,7 @@ canarias-analisis/
 | 06 | Tourism employment | Companies in tourism activities by island — CNAE-09 classification | 2005–2015 |
 | 07 | Tourist digital behavior | Smartphone/tablet usage by accommodation type — connected vs offline | 2018–2020 |
 | 08 | Water consumption | Volume, per capita, losses by water cycle (ISTAC) | 1996–2022 |
+| 09 | GDP | Total and per capita, growth rate — Canarias vs Spain | 2000–2024 |
 
 ## Setup
 
